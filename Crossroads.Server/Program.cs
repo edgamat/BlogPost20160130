@@ -12,6 +12,8 @@ namespace Crossroads.Server
     {
         public static void Main(string[] args)
         {
+            Console.Title = "Crossroads";
+
             var config = new ConfigurationBuilder()
                 .AddCommandLine(args)
                 .AddEnvironmentVariables(prefix: "ASPNETCORE_")
@@ -20,6 +22,7 @@ namespace Crossroads.Server
             var host = new WebHostBuilder()
                 .UseConfiguration(config)
                 .UseKestrel()
+                .UseUrls("http://localhost:5000")
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()

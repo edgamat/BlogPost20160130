@@ -28,8 +28,16 @@ namespace Crossroads.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDeveloperIdentityServer()
+                .AddInMemoryScopes(IdentityServerConfig.GetScopes())
+                .AddInMemoryClients(IdentityServerConfig.GetClients())
+                .AddInMemoryUsers(IdentityServerConfig.GetUsers());
+
             // Add framework services.
             services.AddMvc();
+
+            // Add application services.
+            services.AddSingleton<IConfiguration>(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,6 +58,16 @@ namespace Crossroads.Server
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            app.UseIdentityServer();
+
+            app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
+            {
+                Authority = "http://localhost:5000",
+                ScopeName = "apiAccess",
+
+                RequireHttpsMetadata = false
+            });
 
             app.UseStaticFiles();
 
