@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;
@@ -33,8 +34,17 @@ namespace Crossroads.Server
                 .AddInMemoryClients(IdentityServerConfig.GetClients())
                 .AddInMemoryUsers(IdentityServerConfig.GetUsers());
 
+            var scopePolicy = new AuthorizationPolicyBuilder()
+                .RequireClaim("scope", "apiAccess")
+                .Build();
+
             // Add framework services.
             services.AddMvc();
+
+            services.AddNodeServices(options => {
+                options.LaunchWithDebugging = true;
+                options.DebuggingPort = 5858;
+            });
 
             // Add application services.
             services.AddSingleton<IConfiguration>(Configuration);

@@ -16,6 +16,8 @@ module.exports = {
     },
     entry: {
         vendor: [
+            'aurelia-api',
+            'aurelia-authentication',
             'aurelia-event-aggregator',
             'aurelia-fetch-client',
             'aurelia-framework',
