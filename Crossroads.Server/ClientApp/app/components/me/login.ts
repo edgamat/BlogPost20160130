@@ -13,9 +13,13 @@ export class Login {
     heading = 'Login';
 
     authenticate(name) {
-        return this.authService.authenticate(name)
+        return this.authService.authenticate(name, null)
             .then(response => {
                 console.log(`BOOGA-Auth:${this.authService.isAuthenticated()}`);
+            })
+            .catch(error => {
+                console.log("Authentication error");
+                console.log(error);
             });
     }
 }

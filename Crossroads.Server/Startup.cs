@@ -29,11 +29,6 @@ namespace Crossroads.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDeveloperIdentityServer()
-                .AddInMemoryScopes(IdentityServerConfig.GetScopes())
-                .AddInMemoryClients(IdentityServerConfig.GetClients())
-                .AddInMemoryUsers(IdentityServerConfig.GetUsers());
-
             var scopePolicy = new AuthorizationPolicyBuilder()
                 .RequireClaim("scope", "apiAccess")
                 .Build();
@@ -41,13 +36,13 @@ namespace Crossroads.Server
             // Add framework services.
             services.AddMvc();
 
-            services.AddNodeServices(options => {
-                options.LaunchWithDebugging = true;
-                options.DebuggingPort = 5858;
-            });
-
             // Add application services.
             services.AddSingleton<IConfiguration>(Configuration);
+
+            services.AddDeveloperIdentityServer()
+                .AddInMemoryScopes(IdentityServerConfig.GetScopes())
+                .AddInMemoryClients(IdentityServerConfig.GetClients())
+                .AddInMemoryUsers(IdentityServerConfig.GetUsers());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,6 +50,14 @@ namespace Crossroads.Server
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            app.UseCors(policy =>
+            {
+                policy.AllowAnyOrigin();
+                policy.AllowAnyHeader();
+                policy.AllowAnyMethod();
+                policy.AllowCredentials();
+            });
 
             if (env.IsDevelopment())
             {
@@ -75,7 +78,6 @@ namespace Crossroads.Server
             {
                 Authority = "http://localhost:5000",
                 ScopeName = "apiAccess",
-
                 RequireHttpsMetadata = false
             });
 
